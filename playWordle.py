@@ -4,25 +4,6 @@ linkList = open("data/linkFile.txt").read().splitlines()
 scoreList = open("data/scoreFile.txt").read().splitlines()
 answers = open("data/answers.txt").read().splitlines()
 
-
-def likeness(word1, word2):
-    green, yellow, black = [], [], []
-    for i in range(5):
-        if word1[i] == word2[i]:
-            green.append((word1[i], i))
-        elif word1[i] in word2:
-            yellow.append((word1[i], i))
-        else:
-            black.append((word1[i], i))
-    for letter, index in yellow: # discard duplicate yellows
-        word1Tot = yellow.count(letter) + green.count(letter)
-        word2Tot = word2.count(letter)
-        diff = word1Tot - word2Tot
-        if diff > 0:
-            for i in range(diff):
-                yellow.remove(letter)
-    return green, yellow, black
-
 def fancyPrint(green, yellow):
     printy = ['⬛️','⬛️','⬛️','⬛️','⬛️']
     for (char, index) in green:
@@ -42,6 +23,31 @@ def printHistogram(data, total):
         else:
             string = "."
         print("{:02d}".format(i),"⏐" + string)
+
+def addFreqs(listy):
+    tot = 0
+    for i in range(len(listy)):
+        tot += listy[i]*i
+    return tot
+
+def likeness(word1, word2):
+    green, yellow, black = [], [], []
+    for i in range(5):
+        if word1[i] == word2[i]:
+            green.append((word1[i], i))
+        elif word1[i] in word2:
+            yellow.append((word1[i], i))
+        else:
+            black.append((word1[i], i))
+    for letter, index in yellow: # discard duplicate yellows
+        word1Tot = yellow.count(letter) + green.count(letter)
+        word2Tot = word2.count(letter)
+        diff = word1Tot - word2Tot
+        if diff > 0:
+            for i in range(diff):
+                yellow.remove(letter)
+    return green, yellow, black
+
     
 
 def nextValid(list, greenList, yellowList, blackList, attempt=10):
@@ -86,11 +92,6 @@ def playGame(ans, priorityList, log=True):
             break
     return j
 
-def addFreqs(listy):
-    tot = 0
-    for i in range(len(listy)):
-        tot += listy[i]*i
-    return tot
 
 attemptsS = [0] * 15
 attemptsL = [0] * 15
