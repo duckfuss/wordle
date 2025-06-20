@@ -60,17 +60,17 @@ def nextValid(list, greenList, yellowList, blackList):
         
 
 for i in range(2):
-    ans = answers[random.randrange(0,len(answers))]
+    ans = "refer"#answers[random.randrange(0,len(answers))]
     word = linkList[0]
     green, yellow, black = [], [], []
     print("NEW GAME")
     print("CORRECT:", ans)
     for j in range(6):
         g, y, b = likeness(word, ans)
-        green.append(g)
-        yellow.append(y)
-        black.append(b)
-        fancyPrint(g,y)
+        green = green + g
+        yellow = yellow + y
+        black = black + b
+        fancyPrint(g, y)
         print(word)
         print(green, yellow, black)
         word = nextValid(linkList, green, yellow, black)
