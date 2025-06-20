@@ -1,5 +1,5 @@
 import random
-random.seed(1)
+random.seed(5)
 
 linkList = open("data/linkFile.txt").read().splitlines()
 scoreList = open("data/scoreFile.txt").read().splitlines()
@@ -32,6 +32,14 @@ def fancyPrint(green, yellow):
         printy[index] = "🟨"
     print("".join(printy))
 
+def printHistogram(data, total):
+    while data[-1] == 0:
+        data.pop()
+    for i in range(len(data)):
+        num = data[i]
+        string = "|" * round((num * 50)/total)
+        print("{:02d}".format(i),string)
+    
 
 def nextValid(list, greenList, yellowList, blackList):
     greenLetters = []
@@ -57,12 +65,8 @@ def nextValid(list, greenList, yellowList, blackList):
                 wrong = True
         if wrong:   continue
         else:       return word
-        
-attempts = [0] * 15
-games = 2000
-priorityList = scoreList # change me
-for i in range(games):
-    ans = answers[random.randrange(0,len(answers))]
+
+def playGame(ans, priorityList):
     word = priorityList[0]
     green, yellow, black = [], [], []
     print("\n")
@@ -77,13 +81,28 @@ for i in range(games):
         if len(green) == 5:
             print("success!", j)
             break
-    attempts[j] += 1
-totalAttempts = 0
-for i in range(len(attempts)):
-    if attempts[i] > 0:
-        print(attempts[i], "games with", i, "guesses")
-    totalAttempts += attempts[i]*i
-print("average no. turns:", totalAttempts/games)
+    return j
 
-# SEELT SOREE
-# BYYBB
+def addFreqs(listy):
+    tot = 0
+    for i in range(len(listy)):
+        tot += listy[i]*i
+    return tot
+
+attemptsS = [0] * 15
+attemptsL = [0] * 15
+games = 5000
+priorityList = scoreList # change me
+for i in range(games):
+    ans = answers[random.randrange(0,len(answers))]
+    print("scoreList")
+    attemptsS[playGame(ans, priorityList=scoreList)] += 1
+    print("linkList")
+    attemptsL[playGame(ans, priorityList=linkList)] += 1
+
+print("\nscore based:")
+printHistogram(attemptsS, games)
+print("average no. turns:", addFreqs(attemptsS)/games)
+print("\nlink based")
+printHistogram(attemptsL, games)
+print("average no. turns:", addFreqs(attemptsL)/games, "\n")
