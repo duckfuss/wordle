@@ -1,7 +1,12 @@
 # wordle
 
+## project structure
 
-## explanation of link based analysis
+rankWordle.py generates linkFile and scoreFiles which both contain words ordered by to what extent they eliminate other words. The difference is simply they're two different methods of doing it.
+
+playWordle.py plays wordle using these files
+
+## explanation of link based analysis (linkFile)
 
 Undirected graph of words where each word links to other words with a weight.
 
