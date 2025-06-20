@@ -2,8 +2,8 @@ import time
 start = time.time()
 
 # open files
-answers = open("answers.txt").read().splitlines()
-allowed = open("allowed.txt").read().splitlines()
+answers = open("data/answers.txt").read().splitlines()
+allowed = open("data/allowed.txt").read().splitlines()
 
 # Functions:
 def printTopN(dict, n):
@@ -70,3 +70,9 @@ linkScoreDict = dict(sorted(linkScoreDict.items(), key = lambda item: item[1], r
 printTopN(linkScoreDict, 10)
 
 print("completed in ", str(round(time.time()-start,2)) + "s")
+
+# 4. write to file
+linkFile = open("data/linkFile.txt", "w")
+linkFile.write("\n".join(list(linkScoreDict)))# already sorted
+scoreFile = open("data/scoreFile.txt", "w")
+scoreFile.write("\n".join(list(totalScoreDict))) # already sorted
