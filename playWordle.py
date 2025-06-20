@@ -1,4 +1,5 @@
 import random
+random.seed(1)
 
 linkList = open("data/linkFile.txt").read().splitlines()
 scoreList = open("data/scoreFile.txt").read().splitlines()
@@ -31,6 +32,7 @@ def fancyPrint(green, yellow):
         printy[index] = "🟨"
     print("".join(printy))
 
+
 def nextValid(list, greenList, yellowList, blackList):
     greenLetters = []
     for char, index in greenList:
@@ -56,9 +58,9 @@ def nextValid(list, greenList, yellowList, blackList):
         if wrong:   continue
         else:       return word
         
-attempts = 0
+attempts = [0] * 15
 games = 2000
-priorityList = scoreList
+priorityList = scoreList # change me
 for i in range(games):
     ans = answers[random.randrange(0,len(answers))]
     word = priorityList[0]
@@ -75,8 +77,13 @@ for i in range(games):
         if len(green) == 5:
             print("success!", j)
             break
-    attempts += j
-print("average no. turns:", attempts/games)
+    attempts[j] += 1
+totalAttempts = 0
+for i in range(len(attempts)):
+    if attempts[i] > 0:
+        print(attempts[i], "games with", i, "guesses")
+    totalAttempts += attempts[i]*i
+print("average no. turns:", totalAttempts/games)
 
 # SEELT SOREE
 # BYYBB
