@@ -1,6 +1,19 @@
 import time
 start = time.time()
 
+answers = open("answers.txt").read().splitlines()
+allowed = open("allowed.txt").read().splitlines()
+
+print(len(allowed), len(answers))
+
+def printTopN(dict, n):
+    c = 0
+    for key, value in dict.items():
+        c += 1
+        if c > n:  break
+        print(c, key, value/2315)
+
+
 def likeness(word1, word2):
     green, yellow = [], []
     for i in range(5):
@@ -18,32 +31,38 @@ def likeness(word1, word2):
     score = (len(green)/5) + (len(yellow)/10)
     return score
 
-def printTopN(dict, n):
-    c = 0
-    for key, value in dict.items():
-        c += 1
-        if c > n:  break
-        print(c, key, value/2315)
-
-
-answers = open("answers.txt").read().splitlines()
-allowed = open("allowed.txt").read().splitlines()
-
-print(len(allowed), len(answers))
-
-tempDict = {}
+# 1. brute force compare every word with every other word
+scoreDict = {}
+linkDict = {}
+linkThreshold = 0.5
 for i in range(len(allowed)):
     allow = allowed[i]
-    tempDict[allow] = 0
+    scoreDict[allow] = 0
+    linkDict[allow] = []
     for answer in answers:
-        tempDict[allow] += likeness(allow, answer)
+        score = likeness(allow, answer)
+        scoreDict[allow] += score
+        if score > linkThreshold:
+            linkDict[allow].append((answer, score))
+    if linkDict[allow] == []: 
+        linkDict.pop(allow)
     if i % 1000 == 0:
-        print(i, allow)
-tempDict = dict(sorted(tempDict.items(), key = lambda item: item[1], reverse=True))
+        print(i, allow, str(round(time.time()-start,1)) + "s")
 
-printTopN(tempDict, 10)
-print(list(tempDict).index("stale"), "stale", tempDict["stale"])
-print(list(tempDict).index("adieu"), "adieu", tempDict["adieu"])
-print(list(tempDict).index("audio"), "audio", tempDict["audio"])
+# 2. Score based analysis
+# sort scoreDict by scores
+scoreDict = dict(sorted(scoreDict.items(), key = lambda item: item[1], reverse=True))
+
+# 3. Link based analysis
+for word, data in linkDict.items():
+    print(word, data)
+    
+
+
+# print out
+printTopN(scoreDict, 10)
+print(list(scoreDict).index("stale"), "stale", scoreDict["stale"])
+print(list(scoreDict).index("adieu"), "adieu", scoreDict["adieu"])
+print(list(scoreDict).index("audio"), "audio", scoreDict["audio"])
 
 print(time.time()-start)
