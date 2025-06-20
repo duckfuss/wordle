@@ -8,46 +8,39 @@ def likeness(word1, word2):
             green.append(word1[i])
         elif word1[i] in word2:
             yellow.append(word1[i])
-    for letter in yellow:
+    for letter in yellow: # discard duplicate yellows
         word1Tot = yellow.count(letter) + green.count(letter)
         word2Tot = word2.count(letter)
         diff = word1Tot - word2Tot
         if diff > 0:
             for i in range(diff):
                 yellow.remove(letter)
-    score = (len(green)/5) + (len(yellow)/10)
+    score = (len(green)/5) + (len(yellow)/20)
     return score
 
-
-
-'''
-SAREE
-green = [S, E]
-yellow = [A, E]
-
-STALE
-'''
+def printTopN(dict, n):
+    c = 0
+    for key, value in dict.items():
+        c += 1
+        if c > n:  break
+        print(c, key, value/2315)
 
 
 answers = open("answers.txt").read().splitlines()
 allowed = open("allowed.txt").read().splitlines()
 
 print(len(allowed), len(answers))
-tempDict = {}
 
+tempDict = {}
 for i in range(len(allowed)):
     allow = allowed[i]
     tempDict[allow] = 0
     for answer in answers:
         tempDict[allow] += likeness(allow, answer)
     if i % 1000 == 0:
-        print(i, tempDict[allow])
-
+        print(i, allow)
 tempDict = dict(sorted(tempDict.items(), key = lambda item: item[1], reverse=True))
 
-c = 0
-for key, value in tempDict.items():
-    c += 1
-    if c > 10:  break
-    print(key, value/2315)
+printTopN(tempDict, 10)
+print(tempDict["audio"], list(tempDict).index("audio"))
 print(time.time()-start)
