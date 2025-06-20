@@ -36,7 +36,7 @@ def nextValid(list, greenList, yellowList, blackList):
     for char, index in greenList:
         greenLetters.append(char)
     yellowLetters = []
-    for char, index in greenList:
+    for char, index in yellowList:
         yellowLetters.append(char)
     blackLetters = []
     for char, index in blackList:
@@ -48,8 +48,6 @@ def nextValid(list, greenList, yellowList, blackList):
             if word[index] != char:
                 wrong = True
         for char, index in yellowList:
-            if word.count(char) < yellowLetters.count(char) + greenLetters.count(char):
-                wrong = True
             if word[index] == char:
                 wrong = True
         for char in blackLetters:
@@ -58,25 +56,27 @@ def nextValid(list, greenList, yellowList, blackList):
         if wrong:   continue
         else:       return word
         
-
-for i in range(2):
-    ans = "refer"#answers[random.randrange(0,len(answers))]
-    word = linkList[0]
+attempts = 0
+games = 2000
+priorityList = scoreList
+for i in range(games):
+    ans = answers[random.randrange(0,len(answers))]
+    word = priorityList[0]
     green, yellow, black = [], [], []
-    print("NEW GAME")
-    print("CORRECT:", ans)
-    for j in range(6):
+    print("\n")
+    print(ans)
+    for j in range(12):
         g, y, b = likeness(word, ans)
-        green = green + g
-        yellow = yellow + y
-        black = black + b
+        green = list(set(green) | set(g))
+        yellow = list(set(yellow) | set(y))
+        black = list(set(black) | set(b))
         fancyPrint(g, y)
-        print(word)
-        print(green, yellow, black)
-        word = nextValid(linkList, green, yellow, black)
+        word = nextValid(priorityList, green, yellow, black)
         if len(green) == 5:
-            print("success!")
+            print("success!", j)
             break
+    attempts += j
+print("average no. turns:", attempts/games)
 
 # SEELT SOREE
 # BYYBB
