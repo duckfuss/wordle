@@ -25,8 +25,7 @@ def likeness(word1, word2):
         word2Tot = word2.count(letter)
         diff = word1Tot - word2Tot
         if diff > 0:
-            for i in range(diff):
-                yellow.remove(letter)
+            for i in range(diff):   yellow.remove(letter)
     similarity = (len(green)/5) + (len(yellow)/10)
     return similarity
 

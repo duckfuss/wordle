@@ -39,16 +39,8 @@ def likeness(word1, word2):
             yellow.append((word1[i], i))
         else:
             black.append((word1[i], i))
-    for letter, index in yellow: # discard duplicate yellows
-        word1Tot = yellow.count(letter) + green.count(letter)
-        word2Tot = word2.count(letter)
-        diff = word1Tot - word2Tot
-        if diff > 0:
-            for i in range(diff):
-                yellow.remove(letter)
     return green, yellow, black
 
-    
 
 def nextValid(list, greenList, yellowList, blackList, attempt=10):
     greenLetters = []
@@ -85,13 +77,14 @@ def playGame(ans, priorityList, log=True):
         green = list(set(green) | set(g))
         yellow = list(set(yellow) | set(y))
         black = list(set(black) | set(b))
-        if log: fancyPrint(g, y)
+        if log: 
+            print(word)
+            fancyPrint(g, y)
         word = nextValid(priorityList, green, yellow, black, attempt=j)
         if len(green) == 5:
             if log: print("success!", j, "\n")
             break
     return j
-
 
 attemptsS = [0] * 15
 attemptsL = [0] * 15
