@@ -1,6 +1,5 @@
 import random
-random.seed(5)
-
+random.seed(10)
 linkList = open("data/linkFile.txt").read().splitlines()
 scoreList = open("data/scoreFile.txt").read().splitlines()
 answers = open("data/answers.txt").read().splitlines()
@@ -42,10 +41,10 @@ def printHistogram(data, total):
             string = "|" * mult
         else:
             string = "."
-        print("{:02d}".format(i),string)
+        print("{:02d}".format(i),"⏐" + string)
     
 
-def nextValid(list, greenList, yellowList, blackList):
+def nextValid(list, greenList, yellowList, blackList, attempt=10):
     greenLetters = []
     for char, index in greenList:
         greenLetters.append(char)
@@ -59,10 +58,12 @@ def nextValid(list, greenList, yellowList, blackList):
     for word in list:
         wrong = False
         for char, index in greenList:
-            if word[index] != char:
+            if word[index] != char: # and attempt > 1: # doesn't
                 wrong = True
         for char, index in yellowList:
-            if word[index] == char:
+            if char not in word:
+                wrong = True
+            elif word[index] == char:
                 wrong = True
         for char in blackLetters:
             if char in word:
@@ -79,7 +80,7 @@ def playGame(ans, priorityList, log=True):
         yellow = list(set(yellow) | set(y))
         black = list(set(black) | set(b))
         if log: fancyPrint(g, y)
-        word = nextValid(priorityList, green, yellow, black)
+        word = nextValid(priorityList, green, yellow, black, attempt=j)
         if len(green) == 5:
             if log: print("success!", j, "\n")
             break
@@ -108,7 +109,7 @@ for i in range(games):
 
 print("\nscore based:")
 printHistogram(attemptsS, games)
-print("average no. turns:", addFreqs(attemptsS)/games)
-print("\nlink based")
+print("average no. attempts:", addFreqs(attemptsS)/games)
+print("\nlink based:")
 printHistogram(attemptsL, games)
-print("average no. turns:", addFreqs(attemptsL)/games, "\n")
+print("average no. attempts:", addFreqs(attemptsL)/games, "\n")
