@@ -13,7 +13,6 @@ def printTopN(dict, n):
         if c > n:  break
         print(c, key, value/2315)
 
-
 def likeness(word1, word2):
     green, yellow = [], []
     for i in range(5):
@@ -31,15 +30,19 @@ def likeness(word1, word2):
     similarity = (len(green)/5) + (len(yellow)/10)
     return similarity
 
-def exploreGraph(word, totalScoreDict, linkDict):
+def exploreGraph(word, totalScoreDict, linkDict, output=0, recDepth=1):
+    if recDepth == 0:
+        return 0
     for (link, linkStrength) in linkDict[word]:
-        pass
-    pass
+        if linkStrength > (1-(2**-recDepth)):
+            output += totalScoreDict[link] * linkStrength
+            output += exploreGraph(link, totalScoreDict, linkDict, output, recDepth-1)
+    return output
 
 # 1. brute force compare every word with every other word
-totalScoreDict = {}
-linkDict = {}
-linkThreshold = 0.3
+totalScoreDict = {} # key: word, value: sum of it's likenesses with all other words
+linkDict = {}       # key: word, value: (linked word, similarity with said word)
+                    # a "link" is two words with a similarity score above this threshold
 for i in range(len(allowed)):
     allow = allowed[i]
     totalScoreDict[allow] = 0
@@ -47,8 +50,7 @@ for i in range(len(allowed)):
     for answer in answers:
         score = likeness(allow, answer)
         totalScoreDict[allow] += score
-        if score > linkThreshold:
-            linkDict[allow].append((answer, score))
+        linkDict[allow].append((answer, score))
     if linkDict[allow] == []: 
         linkDict.pop(allow)
     if i % 1000 == 0:
@@ -61,17 +63,11 @@ totalScoreDict = dict(sorted(totalScoreDict.items(), key = lambda item: item[1],
 printTopN(totalScoreDict, 10)
 #print(list(totalScoreDict).index("stale"), "stale", totalScoreDict["stale"])
 
-
-# 3. Link based analysis
+# 3. link based analysis
 linkScoreDict = {}
 for word, data in linkDict.items():
-    linkScoreDict[word] = 0
-    for (link, linkStrength) in data: # look just at 1st generation links
-        linkTotalScore = totalScoreDict[link]
-        linkScoreDict[word] += linkTotalScore * linkStrength # idk what this function should be
-# sort linkScoreDict
+    linkScoreDict[word] = exploreGraph(word, totalScoreDict, linkDict, recDepth=2)
 linkScoreDict = dict(sorted(linkScoreDict.items(), key = lambda item: item[1], reverse=True))
 printTopN(linkScoreDict, 10)
-
 
 print(time.time()-start)
