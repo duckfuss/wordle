@@ -15,7 +15,7 @@ def likeness(word1, word2):
         if diff > 0:
             for i in range(diff):
                 yellow.remove(letter)
-    score = (len(green)/5) + (len(yellow)/20)
+    score = (len(green)/5) + (len(yellow)/10)
     return score
 
 def printTopN(dict, n):
@@ -42,5 +42,8 @@ for i in range(len(allowed)):
 tempDict = dict(sorted(tempDict.items(), key = lambda item: item[1], reverse=True))
 
 printTopN(tempDict, 10)
-print(tempDict["audio"], list(tempDict).index("audio"))
+print(list(tempDict).index("stale"), "stale", tempDict["stale"])
+print(list(tempDict).index("adieu"), "adieu", tempDict["adieu"])
+print(list(tempDict).index("audio"), "audio", tempDict["audio"])
+
 print(time.time()-start)
