@@ -28,20 +28,25 @@ def likeness(word1, word2):
         if diff > 0:
             for i in range(diff):
                 yellow.remove(letter)
-    score = (len(green)/5) + (len(yellow)/10)
-    return score
+    similarity = (len(green)/5) + (len(yellow)/10)
+    return similarity
+
+def exploreGraph(word, totalScoreDict, linkDict):
+    for (link, linkStrength) in linkDict[word]:
+        pass
+    pass
 
 # 1. brute force compare every word with every other word
-scoreDict = {}
+totalScoreDict = {}
 linkDict = {}
-linkThreshold = 0.5
+linkThreshold = 0.3
 for i in range(len(allowed)):
     allow = allowed[i]
-    scoreDict[allow] = 0
+    totalScoreDict[allow] = 0
     linkDict[allow] = []
     for answer in answers:
         score = likeness(allow, answer)
-        scoreDict[allow] += score
+        totalScoreDict[allow] += score
         if score > linkThreshold:
             linkDict[allow].append((answer, score))
     if linkDict[allow] == []: 
@@ -50,19 +55,23 @@ for i in range(len(allowed)):
         print(i, allow, str(round(time.time()-start,1)) + "s")
 
 # 2. Score based analysis
-# sort scoreDict by scores
-scoreDict = dict(sorted(scoreDict.items(), key = lambda item: item[1], reverse=True))
+# sort totalScoreDict by scores
+totalScoreDict = dict(sorted(totalScoreDict.items(), key = lambda item: item[1], reverse=True))
+# print out
+printTopN(totalScoreDict, 10)
+#print(list(totalScoreDict).index("stale"), "stale", totalScoreDict["stale"])
+
 
 # 3. Link based analysis
+linkScoreDict = {}
 for word, data in linkDict.items():
-    print(word, data)
-    
+    linkScoreDict[word] = 0
+    for (link, linkStrength) in data: # look just at 1st generation links
+        linkTotalScore = totalScoreDict[link]
+        linkScoreDict[word] += linkTotalScore * linkStrength # idk what this function should be
+# sort linkScoreDict
+linkScoreDict = dict(sorted(linkScoreDict.items(), key = lambda item: item[1], reverse=True))
+printTopN(linkScoreDict, 10)
 
-
-# print out
-printTopN(scoreDict, 10)
-print(list(scoreDict).index("stale"), "stale", scoreDict["stale"])
-print(list(scoreDict).index("adieu"), "adieu", scoreDict["adieu"])
-print(list(scoreDict).index("audio"), "audio", scoreDict["audio"])
 
 print(time.time()-start)
