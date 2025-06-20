@@ -1,3 +1,6 @@
+import time
+start = time.time()
+
 def likeness(word1, word2):
     green, yellow = [], []
     for i in range(5):
@@ -40,10 +43,11 @@ for i in range(len(allowed)):
     if i % 1000 == 0:
         print(i, tempDict[allow])
 
-print(len(tempDict))
-
 tempDict = dict(sorted(tempDict.items(), key = lambda item: item[1], reverse=True))
-it = iter(tempDict)
-print(next(it))
-print(next(it))
-print(next(it))
+
+c = 0
+for key, value in tempDict.items():
+    c += 1
+    if c > 10:  break
+    print(key, value/2315)
+print(time.time()-start)
