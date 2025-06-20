@@ -34,7 +34,7 @@ def exploreGraph(word, totalScoreDict, linkDict, output=0, recDepth=1):
     if recDepth == 0:
         return 0
     for (link, linkStrength) in linkDict[word]:
-        if linkStrength > (1-(2**-recDepth)): # prune
+        if linkStrength > (1-(2**-recDepth)): # prune with decay func.
             output += totalScoreDict[link] * linkStrength * recDepth
             output += exploreGraph(link, totalScoreDict, linkDict, output, recDepth-1)
     return output
@@ -62,13 +62,7 @@ printTopN(totalScoreDict, 10)
 print("done in ", str(round(time.time()-start,2)) + "s")
 
 # 3. link based analysis
-#   Undirected graph of words where each word links to other words with a weight.
-#   This weight is = to the similarity (likeness) between the two words.
-#   ...a.k.a how much guessing one word eliminates the other.
-#   Network stored in linkDict = {word: [(linked word, connection weight)]}.
-#   Words are given a score based off the sums of the totalScores of their linked words
-#   ...multiplied by the strength of the link to that word and the recursion depth (counts down)
-#   ...which is done recursively in exploreGraph.
+#   Words are given a score based off the sums of the totalScores of their linked words multiplied by the strength of the link to that word and the recursion depth (counts down)
 linkScoreDict = {}
 for word, data in linkDict.items():
     linkScoreDict[word] = exploreGraph(word, totalScoreDict, linkDict, recDepth=3)
