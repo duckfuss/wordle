@@ -1,6 +1,18 @@
 import time
 start = time.time()
 
+# open files
+answers = open("answers.txt").read().splitlines()
+allowed = open("allowed.txt").read().splitlines()
+
+# Functions:
+def printTopN(dict, n):
+    c = 0
+    for key, value in dict.items():
+        c += 1
+        if c > n:  break
+        print(c, key, value/2315)
+
 def likeness(word1, word2):
     green, yellow = [], []
     for i in range(5):
@@ -15,32 +27,46 @@ def likeness(word1, word2):
         if diff > 0:
             for i in range(diff):
                 yellow.remove(letter)
-    score = (len(green)/5) + (len(yellow)/20)
-    return score
+    similarity = (len(green)/5) + (len(yellow)/10)
+    return similarity
 
-def printTopN(dict, n):
-    c = 0
-    for key, value in dict.items():
-        c += 1
-        if c > n:  break
-        print(c, key, value/2315)
+def exploreGraph(word, totalScoreDict, linkDict, output=0, recDepth=1):
+    if recDepth == 0:
+        return 0
+    for (link, linkStrength) in linkDict[word]:
+        if linkStrength > (1-(2**-recDepth)): # prune with decay func.
+            output += totalScoreDict[link] * linkStrength * recDepth
+            output += exploreGraph(link, totalScoreDict, linkDict, output, recDepth-1)
+    return output
 
-
-answers = open("answers.txt").read().splitlines()
-allowed = open("allowed.txt").read().splitlines()
-
-print(len(allowed), len(answers))
-
-tempDict = {}
+# 1. brute force compare every word with every other word
+totalScoreDict = {} # key: word, value: sum of it's likenesses with all other words
+linkDict = {}       # key: word, value: [(linked word, similarity with said word), (...)]
+                    # a "link" is two words with a similarity score above this threshold
 for i in range(len(allowed)):
     allow = allowed[i]
-    tempDict[allow] = 0
+    totalScoreDict[allow], linkDict[allow] = 0, []
     for answer in answers:
-        tempDict[allow] += likeness(allow, answer)
+        similarity = likeness(allow, answer)
+        totalScoreDict[allow] += similarity
+        linkDict[allow].append((answer, similarity))
+    if linkDict[allow] == []: 
+        linkDict.pop(allow)
     if i % 1000 == 0:
-        print(i, allow)
-tempDict = dict(sorted(tempDict.items(), key = lambda item: item[1], reverse=True))
+        print(i, allow, str(round(time.time()-start,1)) + "s")
 
-printTopN(tempDict, 10)
-print(tempDict["audio"], list(tempDict).index("audio"))
-print(time.time()-start)
+# 2. Score based analysis
+# sort totalScoreDict by scores
+totalScoreDict = dict(sorted(totalScoreDict.items(), key = lambda item: item[1], reverse=True))
+printTopN(totalScoreDict, 10)
+print("done in ", str(round(time.time()-start,2)) + "s")
+
+# 3. link based analysis
+#   Words are given a score based off the sums of the totalScores of their linked words multiplied by the strength of the link to that word and the recursion depth (counts down)
+linkScoreDict = {}
+for word, data in linkDict.items():
+    linkScoreDict[word] = exploreGraph(word, totalScoreDict, linkDict, recDepth=3)
+linkScoreDict = dict(sorted(linkScoreDict.items(), key = lambda item: item[1], reverse=True))
+printTopN(linkScoreDict, 10)
+
+print("completed in ", str(round(time.time()-start,2)) + "s")
