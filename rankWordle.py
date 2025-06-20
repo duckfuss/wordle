@@ -73,6 +73,6 @@ print("completed in ", str(round(time.time()-start,2)) + "s")
 
 # 4. write to file
 linkFile = open("data/linkFile.txt", "w")
-linkFile.write(linkScoreDict)
+linkFile.write("\n".join(list(linkScoreDict)))# already sorted
 scoreFile = open("data/scoreFile.txt", "w")
-scoreFile.write(totalScoreDict)
+scoreFile.write("\n".join(list(totalScoreDict))) # already sorted
