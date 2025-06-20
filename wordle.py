@@ -10,3 +10,9 @@ def likeness(word1, word2):
     print(score)
 
 likeness("stale", "scrap")
+
+answers = open("answers.txt").read().splitlines()
+allowed = open("allowed.txt").read().splitlines()
+
+print(len(allowed), len(answers))
+
